@@ -28,18 +28,27 @@ export const jobsApi = {
   },
 
   save: async (id: number | string): Promise<void> => {
-    await api.post(`/jobs/${id}/save`);
+    await api.post(`/saved-jobs/${id}`);
   },
 
   unsave: async (id: number | string): Promise<void> => {
-    await api.delete(`/jobs/${id}/save`);
+    await api.delete(`/saved-jobs/${id}`);
   },
 
-  getSaved: async (page = 1, limit = 20): Promise<PaginatedResponse<JobWithSaved>> => {
-    const res = await api.get<{ success: boolean; data: PaginatedResponse<JobWithSaved> }>('/jobs/saved', {
-      params: { page, limit },
-    });
-    return res.data.data!;
+  getSaved: async (): Promise<PaginatedResponse<JobWithSaved>> => {
+    const res = await api.get<any[]>('/saved-jobs');
+    // Transform SavedJobResponse [{ job: Job }] into JobWithSaved[]
+    const items = res.data.map(item => ({
+      ...item.job,
+      isSaved: true,
+      saved_at: item.saved_at
+    }));
+    return {
+      items,
+      total: items.length,
+      page: 1,
+      limit: 100,
+    };
   },
 
   analyze: async (id: number | string): Promise<Record<string, unknown>> => {

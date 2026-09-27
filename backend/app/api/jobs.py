@@ -12,6 +12,8 @@ router = APIRouter()
 @router.get("", response_model=List[JobResponse])
 def get_jobs(db: Session = Depends(get_db)):
     jobs = db.query(models.Job).all()
+    for job in jobs:
+        job.isSaved = len(job.saved_entries) > 0
     return jobs
 
 @router.get("/{job_id}", response_model=JobResponse)
@@ -19,6 +21,7 @@ def get_job(job_id: int, db: Session = Depends(get_db)):
     job = db.query(models.Job).filter(models.Job.id == job_id).first()
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
+    job.isSaved = len(job.saved_entries) > 0
     return job
 
 @router.post("", response_model=JobResponse, status_code=status.HTTP_201_CREATED)
@@ -54,8 +57,8 @@ class JobSearchRequest(BaseModel):
     remote_type: Optional[str] = None
 
 @router.post("/search")
-def search_jobs(params: JobSearchRequest):
-    return {
-        "message": "Search parameters received successfully. Scraping will be added in Phase 5.",
-        "params": params.model_dump()
-    }
+async def search_jobs(params: JobSearchRequest, db: Session = Depends(get_db)):
+    from app.automation.service import job_search_service
+    
+    result = await job_search_service.run_search(params.model_dump(), db)
+    return result

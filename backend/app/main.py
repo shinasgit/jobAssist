@@ -28,5 +28,8 @@ app.add_middleware(
 def health_check():
     return {"status": "ok", "project": settings.PROJECT_NAME}
 
+from app.api.saved_jobs import router as saved_jobs_router
+
 app.include_router(api_router, prefix="/api")
 app.include_router(jobs_router, prefix="/api/jobs", tags=["jobs"])
+app.include_router(saved_jobs_router, prefix="/api/saved-jobs", tags=["saved_jobs"])

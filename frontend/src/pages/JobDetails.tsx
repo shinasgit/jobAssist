@@ -5,6 +5,7 @@ import { jobsApi } from '../services/jobsApi';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import clsx from 'clsx';
+import DOMPurify from 'dompurify';
 
 export default function JobDetails() {
   const { id } = useParams<{ id: string }>();
@@ -106,10 +107,17 @@ export default function JobDetails() {
               onClick={() => toggleSave()}
               className="btn-secondary"
             >
-              {job.isSaved
-                ? <BookmarkCheck className="w-4 h-4 text-yellow-400" />
-                : <Bookmark className="w-4 h-4" />
-              }
+              {job.isSaved ? (
+                <>
+                  <BookmarkCheck className="w-4 h-4 text-yellow-400" />
+                  Saved
+                </>
+              ) : (
+                <>
+                  <Bookmark className="w-4 h-4" />
+                  Save Job
+                </>
+              )}
             </button>
             <a
               id="link-source"
@@ -138,9 +146,10 @@ export default function JobDetails() {
       {/* Description */}
       <div className="glass-card p-6">
         <h2 className="text-sm font-semibold text-surface-300 uppercase tracking-wider mb-4">Job Description</h2>
-        <div className="text-sm text-surface-300 whitespace-pre-wrap leading-relaxed">
-          {job.description}
-        </div>
+        <div 
+          className="text-sm text-surface-300 leading-relaxed prose prose-invert max-w-none"
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.description || '') }}
+        />
       </div>
 
     </div>

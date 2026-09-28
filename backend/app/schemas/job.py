@@ -22,5 +22,6 @@ class JobResponse(JobBase):
     id: int
     discovered_at: datetime
     isSaved: Optional[bool] = False
+    isApplied: Optional[bool] = False
     
     model_config = ConfigDict(from_attributes=True)

@@ -34,6 +34,26 @@ export interface PaginatedResponse<T> {
   limit: number;
 }
 
+export interface UserSettings {
+  id: number;
+  keywords: string[];
+  locations: string[];
+  experience: string;
+  remote_type: string;
+  employment_types: string[];
+  enabled_sources: string[];
+}
+
+export interface DashboardSummary {
+  total_jobs: number;
+  new_jobs: number;
+  saved_jobs: number;
+  applications: number;
+  recent_jobs: Job[];
+  recent_saved_jobs: { id: number; job_id: number; saved_at: string; job: Job }[];
+  recent_applications: Application[];
+}
+
 export interface DashboardStats {
   jobsFoundToday: number;
   relevantJobs: number;
@@ -58,6 +78,8 @@ export interface Job {
   source_url: string | null;
   posted_date: string | null;
   discovered_at: string;
+  isSaved?: boolean;
+  isApplied?: boolean;
 }
 
 export interface JobSearchFilters {
@@ -71,29 +93,19 @@ export interface JobSearchFilters {
 }
 
 export type ApplicationStatus = 
-  | 'SAVED'
-  | 'PREPARING'
-  | 'READY_TO_APPLY'
-  | 'USER_REVIEW'
   | 'APPLIED'
   | 'INTERVIEW'
   | 'OFFER'
-  | 'REJECTED'
-  | 'WITHDRAWN';
+  | 'REJECTED';
 
 export interface Application {
-  id: string;
-  jobId: string;
-  jobTitle: string;
-  companyName: string;
-  resumeId?: string;
-  coverLetter?: string;
-  applicationUrl?: string;
+  id: number;
+  job_id: number;
   status: ApplicationStatus;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
-  job?: Job;
+  notes?: string | null;
+  applied_at?: string | null;
+  updated_at: string;
+  job?: Job & { isSaved?: boolean; isApplied?: boolean };
 }
 
 export interface ApplicationEvent {

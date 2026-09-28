@@ -50,6 +50,10 @@ class Application(Base):
     applied_at = Column(DateTime, nullable=True)
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
+    __table_args__ = (
+        UniqueConstraint('job_id', name='uix_app_job_id'),
+    )
+
     job = relationship("Job", back_populates="applications")
 
 class Setting(Base):

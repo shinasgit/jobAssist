@@ -1,15 +1,13 @@
 import { useParams, Link } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Bookmark, BookmarkCheck, ExternalLink } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { ArrowLeft, ExternalLink, Globe } from 'lucide-react';
 import { jobsApi } from '../services/jobsApi';
-import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import clsx from 'clsx';
 import DOMPurify from 'dompurify';
 
 export default function JobDetails() {
   const { id } = useParams<{ id: string }>();
-  const qc = useQueryClient();
 
   const { data: job, isLoading } = useQuery({
     queryKey: ['job', id],
@@ -17,22 +15,9 @@ export default function JobDetails() {
     enabled: !!id,
   });
 
-  const { mutate: toggleSave } = useMutation({
-    mutationFn: async () => {
-      if (job?.isSaved) await jobsApi.unsave(id!);
-      else await jobsApi.save(id!);
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['job', id] });
-      toast.success(job?.isSaved ? 'Removed from saved' : 'Job saved!');
-    },
-  });
-
-
-
   if (isLoading) {
     return (
-      <div className="max-w-3xl space-y-4">
+      <div className="max-w-3xl mx-auto space-y-4 w-full">
         <div className="skeleton h-8 w-48" />
         <div className="glass-card p-6 space-y-4">
           <div className="skeleton h-6 w-64" />
@@ -53,33 +38,38 @@ export default function JobDetails() {
   }
 
   return (
-    <div className="max-w-3xl space-y-6 animate-fade-in">
+    <div className="max-w-3xl mx-auto space-y-6 animate-fade-in w-full min-w-0">
       {/* Back */}
       <Link
         id="link-back-jobs"
         to="/jobs"
-        className="inline-flex items-center gap-2 text-sm text-surface-400 hover:text-surface-100 transition-colors"
+        className="inline-flex items-center gap-2 text-xs sm:text-sm text-surface-400 hover:text-surface-100 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" /> Back to Jobs
       </Link>
 
       {/* Header Card */}
-      <div className="glass-card p-6">
-        <div className="flex items-start gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-brand flex items-center justify-center text-lg font-bold text-white shrink-0">
+      <div className="glass-card p-4 sm:p-6 w-full">
+        <div className="flex flex-col sm:flex-row items-start gap-4">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-brand flex items-center justify-center text-base sm:text-lg font-bold text-white shrink-0">
             {job.company ? job.company.charAt(0).toUpperCase() : '?'}
           </div>
 
-          <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-bold text-surface-50">{job.title}</h1>
-            <p className="text-surface-400 text-sm mt-0.5">
+          <div className="flex-1 min-w-0 w-full">
+            <h1 className="text-lg sm:text-xl font-bold text-surface-50 break-words">{job.title}</h1>
+            <p className="text-surface-400 text-xs sm:text-sm mt-0.5">
               {job.company ?? 'Unknown Company'}
               {job.location && ` · ${job.location}`}
             </p>
 
             <div className="flex flex-wrap gap-2 mt-3">
+              {job.source && (
+                <span className="badge-neutral text-xs capitalize flex items-center gap-1 font-medium">
+                  <Globe className="w-3 h-3 text-surface-400" /> {job.source}
+                </span>
+              )}
               {job.remote_type && (
-                <span className={clsx('badge', {
+                <span className={clsx('badge text-xs', {
                   'badge-success': job.remote_type.toLowerCase() === 'remote',
                   'badge-brand': job.remote_type.toLowerCase() === 'hybrid',
                   'badge-neutral': job.remote_type.toLowerCase() === 'onsite',
@@ -88,70 +78,53 @@ export default function JobDetails() {
                 </span>
               )}
               {job.employment_type && (
-                <span className="badge-neutral">{job.employment_type}</span>
+                <span className="badge-neutral text-xs">{job.employment_type}</span>
               )}
               {job.posted_date && (
-                <span className="badge-neutral">
+                <span className="badge-neutral text-xs">
                   Posted {format(new Date(job.posted_date), 'MMM d, yyyy')}
                 </span>
               )}
               {job.experience && (
-                <span className="badge-brand">{job.experience}</span>
+                <span className="badge-brand text-xs">{job.experience}</span>
               )}
             </div>
           </div>
+        </div>
 
-          <div className="flex gap-2 shrink-0">
-            <button
-              id="btn-save-job"
-              onClick={() => toggleSave()}
-              className="btn-secondary"
-            >
-              {job.isSaved ? (
-                <>
-                  <BookmarkCheck className="w-4 h-4 text-yellow-400" />
-                  Saved
-                </>
-              ) : (
-                <>
-                  <Bookmark className="w-4 h-4" />
-                  Save Job
-                </>
-              )}
-            </button>
+        {/* Action Buttons Row */}
+        {job.source_url && (
+          <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-surface-800/80">
             <a
               id="link-source"
-              href={job.source_url ?? '#'}
+              href={job.source_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-secondary"
+              className="btn-primary w-full sm:w-auto justify-center gap-2 min-h-[44px]"
             >
-              <ExternalLink className="w-4 h-4" />
+              <span>Open Original Job Listing</span> <ExternalLink className="w-4 h-4" />
             </a>
           </div>
-        </div>
+        )}
 
         {/* Salary */}
         {job.salary && (
           <div className="mt-4 p-3 bg-success/5 border border-success/20 rounded-xl">
-            <p className="text-sm text-success font-medium">
+            <p className="text-xs sm:text-sm text-success font-medium">
               {job.salary}
             </p>
           </div>
         )}
-
-
       </div>
 
       {/* Description */}
-      <div className="glass-card p-6">
-        <h2 className="text-sm font-semibold text-surface-300 uppercase tracking-wider mb-4">Job Description</h2>
+      <div className="glass-card p-4 sm:p-6 w-full">
+        <h2 className="text-xs sm:text-sm font-semibold text-surface-300 uppercase tracking-wider mb-4">Job Description</h2>
         <div 
-          className="text-sm text-surface-300 leading-relaxed prose prose-invert max-w-none"
+          className="text-xs sm:text-sm text-surface-300 leading-relaxed prose prose-invert max-w-none overflow-x-auto break-words"
           dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.description || '') }}
         />
       </div>
-
     </div>
   );
 }

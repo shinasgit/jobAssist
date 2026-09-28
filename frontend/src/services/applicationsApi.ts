@@ -1,45 +1,28 @@
 import { api } from './api';
-import type { Application, ApplicationStatus, JobMatchResult } from '../types';
+import type { Application, ApplicationStatus } from '../types';
 
 export const applicationsApi = {
-  list: async (status?: string): Promise<Application[]> => {
-    const res = await api.get<{ success: boolean; data: Application[] }>('/applications', {
-      params: status ? { status } : undefined,
-    });
-    return res.data.data!;
+  list: async (): Promise<Application[]> => {
+    const res = await api.get<Application[]>('/applications');
+    return res.data;
   },
 
-  get: async (id: string): Promise<Application> => {
-    const res = await api.get<{ success: boolean; data: Application }>(`/applications/${id}`);
-    return res.data.data!;
+  get: async (jobId: number | string): Promise<Application> => {
+    const res = await api.get<Application>(`/applications/${jobId}`);
+    return res.data;
   },
 
-  create: async (data: { jobId: string; resumeId?: string; notes?: string }): Promise<Application> => {
-    const res = await api.post<{ success: boolean; data: Application }>('/applications', data);
-    return res.data.data!;
+  create: async (jobId: number | string, notes?: string): Promise<Application> => {
+    const res = await api.post<Application>(`/applications/${jobId}`, { notes });
+    return res.data;
   },
 
-  updateStatus: async (id: string, status: ApplicationStatus, notes?: string): Promise<Application> => {
-    const res = await api.patch<{ success: boolean; data: Application }>(`/applications/${id}/status`, { status, notes });
-    return res.data.data!;
+  update: async (jobId: number | string, data: { status?: ApplicationStatus; notes?: string }): Promise<Application> => {
+    const res = await api.patch<Application>(`/applications/${jobId}`, data);
+    return res.data;
   },
 
-  update: async (id: string, data: { notes?: string; coverLetter?: string; resumeId?: string }): Promise<Application> => {
-    const res = await api.patch<{ success: boolean; data: Application }>(`/applications/${id}`, data);
-    return res.data.data!;
-  },
-
-  delete: async (id: string): Promise<void> => {
-    await api.delete(`/applications/${id}`);
-  },
-
-  generateCoverLetter: async (id: string, tone?: string): Promise<string> => {
-    const res = await api.post<{ success: boolean; data: { coverLetter: string } }>(`/applications/${id}/cover-letter`, { tone });
-    return res.data.data!.coverLetter;
-  },
-
-  matchResume: async (id: string): Promise<JobMatchResult> => {
-    const res = await api.post<{ success: boolean; data: JobMatchResult }>(`/applications/${id}/match`);
-    return res.data.data!;
+  delete: async (jobId: number | string): Promise<void> => {
+    await api.delete(`/applications/${jobId}`);
   },
 };

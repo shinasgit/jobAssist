@@ -14,6 +14,7 @@ def get_jobs(db: Session = Depends(get_db)):
     jobs = db.query(models.Job).all()
     for job in jobs:
         job.isSaved = len(job.saved_entries) > 0
+        job.isApplied = len(job.applications) > 0
     return jobs
 
 @router.get("/{job_id}", response_model=JobResponse)
@@ -22,6 +23,7 @@ def get_job(job_id: int, db: Session = Depends(get_db)):
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     job.isSaved = len(job.saved_entries) > 0
+    job.isApplied = len(job.applications) > 0
     return job
 
 @router.post("", response_model=JobResponse, status_code=status.HTTP_201_CREATED)

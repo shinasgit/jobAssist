@@ -1,22 +1,17 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Search, MapPin, Filter, Briefcase, ArrowRight, Bookmark, BookmarkCheck, Wifi, WifiOff } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Search, MapPin, Filter, Briefcase } from 'lucide-react';
 import { jobsApi } from '../services/jobsApi';
 import { useJobStore } from '../store/jobStore';
-import type { Job, RemoteType } from '../types';
-import { format } from 'date-fns';
-import toast from 'react-hot-toast';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { RemoteType } from '../types';
 import clsx from 'clsx';
+import { JobCard } from '../components/jobs/JobCard';
 
 const REMOTE_OPTIONS: { value: RemoteType; label: string }[] = [
   { value: 'remote', label: 'Remote' },
   { value: 'hybrid', label: 'Hybrid' },
   { value: 'onsite', label: 'On-site' },
 ];
-
-import { JobCard } from '../components/jobs/JobCard';
 
 export default function Jobs() {
   const { filters, setFilters, resetFilters } = useJobStore();
@@ -42,18 +37,18 @@ export default function Jobs() {
   }
 
   return (
-    <div className="max-w-5xl space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="max-w-5xl mx-auto space-y-6 w-full min-w-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
-          <h1 className="page-title">Job Search</h1>
-          <p className="page-subtitle mt-1">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-surface-50">Job Search</h1>
+          <p className="text-xs sm:text-sm text-surface-400 mt-1">
             {data ? `${data.total.toLocaleString()} jobs found` : 'Searching…'}
           </p>
         </div>
       </div>
 
       {/* Search Bar */}
-      <form id="form-job-search" onSubmit={handleSearch} className="flex gap-2">
+      <form id="form-job-search" onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
           <input
@@ -62,10 +57,10 @@ export default function Jobs() {
             placeholder="Job title, company, or skill…"
             value={localKeyword}
             onChange={(e) => setLocalKeyword(e.target.value)}
-            className="input pl-10"
+            className="input pl-10 w-full"
           />
         </div>
-        <div className="relative">
+        <div className="relative w-full sm:w-48">
           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
           <input
             id="input-job-location"
@@ -73,20 +68,22 @@ export default function Jobs() {
             placeholder="Location"
             value={filters.location ?? ''}
             onChange={(e) => setFilters({ location: e.target.value })}
-            className="input pl-10 w-48"
+            className="input pl-10 w-full"
           />
         </div>
-        <button type="submit" id="btn-search" className="btn-primary px-5">
-          Search
-        </button>
-        <button
-          type="button"
-          id="btn-toggle-filters"
-          onClick={() => setShowFilters((s) => !s)}
-          className="btn-secondary"
-        >
-          <Filter className="w-4 h-4" />
-        </button>
+        <div className="flex gap-2">
+          <button type="submit" id="btn-search" className="btn-primary flex-1 sm:flex-initial px-5 justify-center">
+            Search
+          </button>
+          <button
+            type="button"
+            id="btn-toggle-filters"
+            onClick={() => setShowFilters((s) => !s)}
+            className="btn-secondary"
+          >
+            <Filter className="w-4 h-4" />
+          </button>
+        </div>
       </form>
 
       {/* Filters Panel */}
@@ -94,7 +91,7 @@ export default function Jobs() {
         <div className="glass-card p-4 space-y-4 animate-slide-up">
           <div>
             <p className="text-xs font-semibold text-surface-400 uppercase tracking-wider mb-2">Work Mode</p>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {REMOTE_OPTIONS.map(({ value, label }) => (
                 <button
                   key={value}
@@ -130,7 +127,7 @@ export default function Jobs() {
 
         {isLoading ? (
           Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="glass-card p-5 space-y-3">
+            <div key={i} className="glass-card p-4 sm:p-5 space-y-3">
               <div className="flex gap-4">
                 <div className="skeleton w-12 h-12 rounded-xl" />
                 <div className="flex-1 space-y-2">
@@ -145,7 +142,7 @@ export default function Jobs() {
             </div>
           ))
         ) : data?.items?.length === 0 ? (
-          <div className="glass-card p-12 empty-state">
+          <div className="glass-card p-8 sm:p-12 text-center flex flex-col items-center justify-center">
             <Briefcase className="w-12 h-12 text-surface-600 mb-4" />
             <p className="text-surface-300 font-medium">No jobs found</p>
             <p className="text-surface-500 text-sm mt-1">Try different keywords or filters</p>
@@ -160,7 +157,7 @@ export default function Jobs() {
 
       {/* Pagination */}
       {data && Math.ceil(data.total / data.limit) > 1 && (
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2 pt-2">
           <button
             id="btn-prev-page"
             disabled={filters.page === 1}
@@ -169,7 +166,7 @@ export default function Jobs() {
           >
             Previous
           </button>
-          <span className="text-sm text-surface-400">
+          <span className="text-xs sm:text-sm text-surface-400 px-2">
             Page {filters.page ?? 1} of {Math.ceil(data.total / data.limit)}
           </span>
           <button

@@ -17,20 +17,4 @@ def write_profile(profile: Profile):
 
 
 
-# --- APPLICATIONS (MOCK UNTIL PHASE 2 SQLITE) ---
-@router.get("/applications")
-def read_applications(status: str | None = None):
-    return {"success": True, "data": []}
-
-@router.post("/applications")
-def add_application(job_id: str):
-    new_app = Application(
-        id=str(uuid.uuid4()),
-        jobId=job_id,
-        jobTitle="Unknown",
-        companyName="Unknown",
-        status="SAVED",
-        createdAt=datetime.now().isoformat(),
-        updatedAt=datetime.now().isoformat()
-    )
-    return {"success": True, "data": new_app.model_dump()}
+# --- APPLICATIONS HANDLED BY APP.API.APPLICATIONS ---

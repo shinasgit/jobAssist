@@ -39,3 +39,8 @@ frontend/.vite/
 venv/
 __pycache__/
 *.pyc
+
+# SQLite Database
+*.db
+*.sqlite
+*.sqlite3

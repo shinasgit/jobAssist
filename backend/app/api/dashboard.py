@@ -16,8 +16,17 @@ def get_dashboard_summary(db: Session = Depends(get_db)):
     seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
     new_jobs = db.query(models.Job).filter(models.Job.discovered_at >= seven_days_ago).count()
     
+    mnc_jobs_count = db.query(models.Job).filter(models.Job.source_category == "MNC").count()
+    startup_jobs_count = db.query(models.Job).filter(models.Job.source_category == "STARTUP").count()
+    it_tech_jobs_count = db.query(models.Job).filter(models.Job.source_category.in_(["IT_TECH", "MNC", "STARTUP"])).count()
+    remote_jobs_count = db.query(models.Job).filter(
+        (models.Job.source_category == "REMOTE") |
+        (models.Job.remote_type.in_(["Remote", "Worldwide"]))
+    ).count()
+
     saved_jobs_count = db.query(models.SavedJob).count()
     applications_count = db.query(models.Application).count()
+
 
     # Recent 5 jobs
     recent_jobs = db.query(models.Job).order_by(models.Job.discovered_at.desc()).limit(5).all()
@@ -42,9 +51,14 @@ def get_dashboard_summary(db: Session = Depends(get_db)):
     return DashboardResponse(
         total_jobs=total_jobs,
         new_jobs=new_jobs,
+        mnc_jobs=mnc_jobs_count,
+        startup_jobs=startup_jobs_count,
+        it_tech_jobs=it_tech_jobs_count,
+        remote_jobs=remote_jobs_count,
         saved_jobs=saved_jobs_count,
         applications=applications_count,
         recent_jobs=recent_jobs,
         recent_saved_jobs=recent_saved,
         recent_applications=recent_apps
     )
+

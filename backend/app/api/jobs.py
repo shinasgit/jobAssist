@@ -9,13 +9,31 @@ from app.schemas.job import JobCreate, JobResponse
 
 router = APIRouter()
 
+from typing import List, Optional
+
 @router.get("", response_model=List[JobResponse])
-def get_jobs(db: Session = Depends(get_db)):
-    jobs = db.query(models.Job).all()
+def get_jobs(category: Optional[str] = None, db: Session = Depends(get_db)):
+    query = db.query(models.Job)
+    if category:
+        cat_clean = category.strip().lower()
+        if cat_clean in ["mnc", "mnc_jobs"]:
+            query = query.filter(models.Job.source_category == "MNC")
+        elif cat_clean in ["startup", "startup_jobs"]:
+            query = query.filter(models.Job.source_category == "STARTUP")
+        elif cat_clean in ["it-tech", "it_tech", "it_tech_jobs"]:
+            query = query.filter(models.Job.source_category.in_(["IT_TECH", "MNC", "STARTUP"]))
+        elif cat_clean in ["remote", "remote_jobs"]:
+            query = query.filter(
+                (models.Job.source_category == "REMOTE") |
+                (models.Job.remote_type.in_(["Remote", "Worldwide"]))
+            )
+
+    jobs = query.all()
     for job in jobs:
         job.isSaved = len(job.saved_entries) > 0
         job.isApplied = len(job.applications) > 0
     return jobs
+
 
 @router.get("/{job_id}", response_model=JobResponse)
 def get_job(job_id: int, db: Session = Depends(get_db)):

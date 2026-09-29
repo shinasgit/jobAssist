@@ -7,10 +7,11 @@ import { Search, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function FindJobs() {
-  const [keyword, setKeyword] = useState('');
-  const [location, setLocation] = useState('');
+  const [keyword, setKeyword] = useState('Junior AI Developer');
+  const [location, setLocation] = useState('Bangalore');
   const [experience, setExperience] = useState('Fresher');
   const [remoteType, setRemoteType] = useState('any');
+
   const navigate = useNavigate();
 
   // Load saved default settings
@@ -62,7 +63,8 @@ export default function FindJobs() {
     <div className="max-w-3xl mx-auto space-y-6 sm:space-y-8 w-full min-w-0">
       <div>
         <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-surface-50">Find Jobs</h1>
-        <p className="text-xs sm:text-sm text-surface-400 mt-1">Search via Multi-Source Backend Aggregator</p>
+        <p className="text-xs sm:text-sm text-surface-400 mt-1">Search configured company career sources & public ATS infrastructure</p>
+
       </div>
 
       <div className="glass-card p-4 sm:p-6 w-full">

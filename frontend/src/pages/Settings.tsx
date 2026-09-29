@@ -9,7 +9,18 @@ const AVAILABLE_SOURCES = [
   { id: 'himalayas', label: 'Himalayas' },
   { id: 'remotive', label: 'Remotive' },
   { id: 'arbeitnow', label: 'Arbeitnow' },
+  { id: 'greenhouse', label: 'Greenhouse' },
+  { id: 'lever', label: 'Lever' },
+  { id: 'ashby', label: 'Ashby' },
+  { id: 'workable', label: 'Workable' },
+  { id: 'recruitee', label: 'Recruitee' },
+  { id: 'breezy', label: 'Breezy HR' },
+  { id: 'bamboohr', label: 'BambooHR' },
+  { id: 'personio', label: 'Personio' },
+  { id: 'smartrecruiters', label: 'SmartRecruiters' },
+  { id: 'teamtailor', label: 'Teamtailor' },
 ];
+
 
 const EMPLOYMENT_OPTIONS = ['Full-time', 'Part-time', 'Internship', 'Contract'];
 

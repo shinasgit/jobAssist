@@ -12,7 +12,7 @@ DEFAULT_LOCATIONS = ["Bangalore"]
 DEFAULT_EXPERIENCE = "Fresher"
 DEFAULT_REMOTE = "any"
 DEFAULT_EMPLOYMENT = ["Full-time"]
-DEFAULT_SOURCES = ["himalayas", "remotive", "arbeitnow"]
+DEFAULT_SOURCES = ["himalayas", "remotive", "arbeitnow", "greenhouse", "lever", "ashby", "workable", "recruitee", "breezy"]
 
 def _db_to_response(setting_obj: models.Setting) -> dict:
     def parse_json_list(val, default):

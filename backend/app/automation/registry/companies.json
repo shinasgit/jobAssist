@@ -1,0 +1,203 @@
+[
+  {
+    "name": "Level AI",
+    "category": "Startup",
+    "ats": "lever",
+    "identifier": "levelai",
+    "career_url": "https://jobs.lever.co/levelai",
+    "locations": ["Bangalore", "Bengaluru"],
+    "enabled": true
+  },
+  {
+    "name": "Emergent Labs",
+    "category": "Startup",
+    "ats": "greenhouse",
+    "identifier": "emergentlabs",
+    "career_url": "https://boards.greenhouse.io/emergentlabs",
+    "locations": ["Bangalore", "Bengaluru"],
+    "enabled": true
+  },
+  {
+    "name": "Founders Factory",
+    "category": "Startup",
+    "ats": "ashby",
+    "identifier": "founders-factory",
+    "career_url": "https://jobs.ashbyhq.com/founders-factory",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "name": "Stripe",
+    "category": "Fintech",
+    "ats": "greenhouse",
+    "identifier": "stripe",
+    "career_url": "https://stripe.com/jobs",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "name": "Postman",
+    "category": "SaaS",
+    "ats": "greenhouse",
+    "identifier": "postman",
+    "career_url": "https://www.postman.com/careers/",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "name": "Razorpay",
+    "category": "Fintech",
+    "ats": "greenhouse",
+    "identifier": "razorpay",
+    "career_url": "https://razorpay.com/jobs/",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "name": "Datadog",
+    "category": "SaaS",
+    "ats": "greenhouse",
+    "identifier": "datadog",
+    "career_url": "https://www.datadoghq.com/careers/",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "name": "Cloudflare",
+    "category": "Product",
+    "ats": "greenhouse",
+    "identifier": "cloudflare",
+    "career_url": "https://www.cloudflare.com/careers/",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "name": "Elastic",
+    "category": "Product",
+    "ats": "greenhouse",
+    "identifier": "elastic",
+    "career_url": "https://www.elastic.co/about/careers",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "name": "Figma",
+    "category": "Product",
+    "ats": "lever",
+    "identifier": "figma",
+    "career_url": "https://www.figma.com/careers/",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "name": "Canva",
+    "category": "Product",
+    "ats": "lever",
+    "identifier": "canva",
+    "career_url": "https://www.canva.com/careers/",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "name": "CRED",
+    "category": "Fintech",
+    "ats": "lever",
+    "identifier": "cred",
+    "career_url": "https://cred.club/careers",
+    "locations": ["Bangalore"],
+    "enabled": true
+  },
+  {
+    "name": "Meesho",
+    "category": "E-commerce",
+    "ats": "lever",
+    "identifier": "meesho",
+    "career_url": "https://www.meesho.io/careers",
+    "locations": ["Bangalore"],
+    "enabled": true
+  },
+  {
+    "name": "Notion",
+    "category": "SaaS",
+    "ats": "ashby",
+    "identifier": "notion",
+    "career_url": "https://www.notion.so/careers",
+    "locations": ["Remote", "Bangalore"],
+    "enabled": true
+  },
+  {
+    "name": "Vercel",
+    "category": "SaaS",
+    "ats": "ashby",
+    "identifier": "vercel",
+    "career_url": "https://vercel.com/careers",
+    "locations": ["Remote", "Bangalore"],
+    "enabled": true
+  },
+  {
+    "name": "Linear",
+    "category": "SaaS",
+    "ats": "ashby",
+    "identifier": "linear",
+    "career_url": "https://linear.app/careers",
+    "locations": ["Remote"],
+    "enabled": true
+  },
+  {
+    "name": "PostHog",
+    "category": "Startup",
+    "ats": "ashby",
+    "identifier": "posthog",
+    "career_url": "https://posthog.com/careers",
+    "locations": ["Remote"],
+    "enabled": true
+  },
+  {
+    "name": "Supabase",
+    "category": "Startup",
+    "ats": "ashby",
+    "identifier": "supabase",
+    "career_url": "https://supabase.com/careers",
+    "locations": ["Remote"],
+    "enabled": true
+  },
+  {
+    "name": "HyperVerge",
+    "category": "AI",
+    "ats": "workable",
+    "identifier": "hyperverge",
+    "career_url": "https://hyperverge.co/careers/",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "name": "SuperOps",
+    "category": "SaaS",
+    "ats": "breezy",
+    "identifier": "superops",
+    "career_url": "https://superops.breezy.hr/",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "name": "Walmart",
+    "category": "MNC",
+    "ats": "workday",
+    "identifier": "walmart",
+    "tenant": "walmart",
+    "datacenter": "wd5",
+    "site": "Walmart_Careers",
+    "career_url": "https://walmart.wd5.myworkdayjobs.com/Walmart_Careers",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "name": "Salesforce",
+    "category": "MNC",
+    "ats": "smartrecruiters",
+    "identifier": "salesforce",
+    "career_url": "https://www.smartrecruiters.com/Salesforce/",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  }
+]

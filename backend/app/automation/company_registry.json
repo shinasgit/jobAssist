@@ -1,0 +1,184 @@
+[
+  {
+    "company": "Stripe",
+    "ats": "greenhouse",
+    "identifier": "stripe",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "company": "Postman",
+    "ats": "greenhouse",
+    "identifier": "postman",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "company": "Razorpay",
+    "ats": "greenhouse",
+    "identifier": "razorpay",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "company": "Hasura",
+    "ats": "greenhouse",
+    "identifier": "hasura",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "company": "Datadog",
+    "ats": "greenhouse",
+    "identifier": "datadog",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "company": "Cloudflare",
+    "ats": "greenhouse",
+    "identifier": "cloudflare",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "company": "Elastic",
+    "ats": "greenhouse",
+    "identifier": "elastic",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "company": "Figma",
+    "ats": "lever",
+    "identifier": "figma",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "company": "Canva",
+    "ats": "lever",
+    "identifier": "canva",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "company": "CRED",
+    "ats": "lever",
+    "identifier": "cred",
+    "locations": ["Bangalore"],
+    "enabled": true
+  },
+  {
+    "company": "CleverTap",
+    "ats": "lever",
+    "identifier": "clevertap",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "company": "Meesho",
+    "ats": "lever",
+    "identifier": "meesho",
+    "locations": ["Bangalore"],
+    "enabled": true
+  },
+  {
+    "company": "Notion",
+    "ats": "ashby",
+    "identifier": "notion",
+    "locations": ["Remote", "Bangalore"],
+    "enabled": true
+  },
+  {
+    "company": "Vercel",
+    "ats": "ashby",
+    "identifier": "vercel",
+    "locations": ["Remote", "Bangalore"],
+    "enabled": true
+  },
+  {
+    "company": "Linear",
+    "ats": "ashby",
+    "identifier": "linear",
+    "locations": ["Remote"],
+    "enabled": true
+  },
+  {
+    "company": "PostHog",
+    "ats": "ashby",
+    "identifier": "posthog",
+    "locations": ["Remote"],
+    "enabled": true
+  },
+  {
+    "company": "Supabase",
+    "ats": "ashby",
+    "identifier": "supabase",
+    "locations": ["Remote"],
+    "enabled": true
+  },
+  {
+    "company": "Tact.ai",
+    "ats": "workable",
+    "identifier": "tactai",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "company": "HyperVerge",
+    "ats": "workable",
+    "identifier": "hyperverge",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "company": "Hotjar",
+    "ats": "recruitee",
+    "identifier": "hotjar",
+    "locations": ["Remote"],
+    "enabled": true
+  },
+  {
+    "company": "Usetiful",
+    "ats": "recruitee",
+    "identifier": "usetiful",
+    "locations": ["Remote"],
+    "enabled": true
+  },
+  {
+    "company": "SuperOps",
+    "ats": "breezy",
+    "identifier": "superops",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "company": "ThoughtWorks",
+    "ats": "bamboohr",
+    "identifier": "thoughtworks",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "company": "Personio",
+    "ats": "personio",
+    "identifier": "personio",
+    "locations": ["Remote"],
+    "enabled": true
+  },
+  {
+    "company": "Square",
+    "ats": "smartrecruiters",
+    "identifier": "square",
+    "locations": ["Bangalore", "Remote"],
+    "enabled": true
+  },
+  {
+    "company": "Spotify",
+    "ats": "teamtailor",
+    "identifier": "spotify",
+    "locations": ["Remote"],
+    "enabled": true
+  }
+]

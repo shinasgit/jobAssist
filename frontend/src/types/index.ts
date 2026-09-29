@@ -47,6 +47,10 @@ export interface UserSettings {
 export interface DashboardSummary {
   total_jobs: number;
   new_jobs: number;
+  mnc_jobs?: number;
+  startup_jobs?: number;
+  it_tech_jobs?: number;
+  remote_jobs?: number;
   saved_jobs: number;
   applications: number;
   recent_jobs: Job[];
@@ -75,6 +79,7 @@ export interface Job {
   employment_type: string | null;
   description: string | null;
   source: string | null;
+  source_category?: string | null;
   source_url: string | null;
   posted_date: string | null;
   discovered_at: string;
@@ -85,12 +90,14 @@ export interface Job {
 export interface JobSearchFilters {
   keyword?: string;
   location?: string;
+  category?: string;
   remoteType?: RemoteType[];
   employmentType?: EmploymentType[];
   skills?: string[];
   page?: number;
   limit?: number;
 }
+
 
 export type ApplicationStatus = 
   | 'APPLIED'

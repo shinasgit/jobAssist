@@ -1,11 +1,16 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  Briefcase, Sparkles, ArrowRight, AlertTriangle, RefreshCw, Clock, Globe, Sliders
+  Briefcase, Sparkles, ArrowRight, AlertTriangle, RefreshCw, Clock, Globe, Sliders,
+  Building2, Rocket, Cpu, Loader2
 } from 'lucide-react';
 import { dashboardApi } from '../services/dashboardApi';
+import { jobsApi } from '../services/jobsApi';
+import { settingsApi } from '../services/settingsApi';
+import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import clsx from 'clsx';
+
 
 function StatCard({
   label,
@@ -46,6 +51,45 @@ function StatCard({
   );
 }
 
+function CategoryCard({
+  title,
+  subtitle,
+  desc,
+  count,
+  to,
+}: {
+  title: string;
+  subtitle: string;
+  desc: string;
+  count: number;
+  to: string;
+}) {
+  return (
+    <Link
+      to={to}
+      className="glass-card-hover p-4 sm:p-5 flex flex-col justify-between group transition-all duration-200"
+    >
+      <div>
+        <div className="flex items-center justify-between gap-2 mb-1">
+          <h3 className="text-sm sm:text-base font-bold text-surface-100 group-hover:text-brand-300 transition-colors">
+            {title}
+          </h3>
+          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-500/10 text-brand-300 border border-brand-500/20">
+            {count.toLocaleString()} jobs
+          </span>
+        </div>
+        <p className="text-xs text-surface-300 font-medium">{subtitle}</p>
+        <p className="text-[11px] text-surface-400 mt-1">{desc}</p>
+      </div>
+
+      <div className="flex items-center justify-end gap-1 text-xs text-brand-400 font-semibold mt-4 group-hover:translate-x-1 transition-transform">
+        <span>View Category</span>
+        <ArrowRight className="w-3.5 h-3.5" />
+      </div>
+    </Link>
+  );
+}
+
 function SkeletonStatCard() {
   return (
     <div className="glass-card p-4 sm:p-5 space-y-3">
@@ -59,19 +103,87 @@ function SkeletonStatCard() {
 }
 
 export default function Dashboard() {
+  const qc = useQueryClient();
+
   const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
     queryKey: ['dashboard-summary'],
     queryFn: () => dashboardApi.getSummary(),
   });
 
+  // Live Multi-Source Search & Sync Mutation
+  const { mutate: handleSyncSources, isPending: isSyncing } = useMutation({
+    mutationFn: async () => {
+      // Get saved search preferences or use defaults
+      const settings = await settingsApi.get();
+      const keyword = settings?.keywords?.[0] || 'Developer';
+      const location = settings?.locations?.[0] || 'Bangalore';
+      const experience = settings?.experience || 'Fresher';
+      const remoteType = settings?.remote_type || 'any';
+
+      return await jobsApi.search({
+        keyword,
+        location,
+        experience,
+        remote_type: remoteType,
+      });
+    },
+    onSuccess: (res: any) => {
+      qc.invalidateQueries({ queryKey: ['dashboard-summary'] });
+      qc.invalidateQueries({ queryKey: ['jobs'] });
+      
+      const inserted = res?.jobs_inserted ?? 0;
+      const found = res?.jobs_found ?? 0;
+      if (inserted > 0) {
+        toast.success(`Discovered and added ${inserted} new jobs to SQLite!`, { duration: 4000 });
+      } else {
+        toast.success(`Sources refreshed. Found ${found} jobs (all up to date).`, { duration: 3000 });
+      }
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.detail ?? err?.message ?? 'Failed to sync job sources');
+    }
+  });
+
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+
 
   const STATS_CONFIG = [
     { label: 'Total Jobs', value: data?.total_jobs?.toLocaleString() ?? '0', subtext: 'In SQLite database', icon: Briefcase, color: 'text-brand-400', bg: 'bg-brand-500/10', to: '/jobs' },
     { label: 'New Jobs (7d)', value: data?.new_jobs?.toLocaleString() ?? '0', subtext: 'Discovered recently', icon: Clock, color: 'text-emerald-400', bg: 'bg-emerald-500/10', to: '/jobs' },
-    { label: 'Active Sources', value: '3 Active', subtext: 'Himalayas, Remotive, Arbeitnow', icon: Globe, color: 'text-blue-400', bg: 'bg-blue-500/10', to: '/settings' },
-    { label: 'Search Preferences', value: 'Configured', subtext: 'Default filters saved', icon: Sliders, color: 'text-purple-400', bg: 'bg-purple-500/10', to: '/settings' },
+    { label: 'Active Sources', value: '14 Active', subtext: 'Company ATS & Feeds', icon: Globe, color: 'text-blue-400', bg: 'bg-blue-500/10', to: '/settings' },
+    { label: 'Search Preferences', value: 'Configured', subtext: 'Bangalore / Remote', icon: Sliders, color: 'text-purple-400', bg: 'bg-purple-500/10', to: '/settings' },
+  ];
+
+  const CATEGORIES = [
+    {
+      title: '🏢 MNC Jobs',
+      subtitle: 'Jobs from major enterprise companies',
+      desc: 'Bangalore • India • Remote',
+      count: data?.mnc_jobs ?? 0,
+      to: '/jobs?category=mnc',
+    },
+    {
+      title: '🚀 Startup Jobs',
+      subtitle: 'Bangalore startups & product companies',
+      desc: 'Early-stage, SaaS & AI startups',
+      count: data?.startup_jobs ?? 0,
+      to: '/jobs?category=startup',
+    },
+    {
+      title: '💻 IT & Tech Jobs',
+      subtitle: 'Software, AI, Cloud, DevOps, etc.',
+      desc: 'Full stack, Backend, Data Science',
+      count: data?.it_tech_jobs ?? 0,
+      to: '/jobs?category=it-tech',
+    },
+    {
+      title: '🌐 Remote Jobs',
+      subtitle: 'Remote technology opportunities',
+      desc: 'Himalayas, Remotive, Arbeitnow & ATS',
+      count: data?.remote_jobs ?? 0,
+      to: '/jobs?category=remote',
+    },
   ];
 
   return (
@@ -83,18 +195,19 @@ export default function Dashboard() {
             {greeting},{' '}
             <span className="text-gradient">Welcome back</span> 👋
           </h1>
-          <p className="text-xs sm:text-sm text-surface-400 mt-1">Multi-source job aggregator & real-time search engine</p>
+          <p className="text-xs sm:text-sm text-surface-400 mt-1">Company Career Collector & Job Discovery Engine</p>
         </div>
 
         <div className="flex items-center gap-2">
           <button
-            onClick={() => refetch()}
-            disabled={isFetching}
+            id="btn-refresh-sources"
+            onClick={() => handleSyncSources()}
+            disabled={isSyncing || isFetching}
             className="btn-secondary btn-sm flex items-center gap-1.5"
-            title="Refresh Dashboard Data"
+            title="Search and Sync All Company Job Sources"
           >
-            <RefreshCw className={clsx('w-3.5 h-3.5', isFetching && 'animate-spin')} />
-            <span className="hidden sm:inline">Refresh</span>
+            <RefreshCw className={clsx('w-3.5 h-3.5', (isSyncing || isFetching) && 'animate-spin text-brand-400')} />
+            <span className="hidden sm:inline">{isSyncing ? 'Syncing Sources…' : 'Refresh Sources'}</span>
           </button>
 
           <Link
@@ -106,6 +219,7 @@ export default function Dashboard() {
             Find Jobs
           </Link>
         </div>
+
       </div>
 
       {/* Error State */}
@@ -122,7 +236,7 @@ export default function Dashboard() {
         </div>
       ) : (
         <>
-          {/* Stats Grid */}
+          {/* Stats Overview */}
           <div>
             <h2 className="text-xs sm:text-sm font-semibold text-surface-400 uppercase tracking-wider mb-3">Database Overview</h2>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -131,6 +245,24 @@ export default function Dashboard() {
                 : STATS_CONFIG.map((stat) => (
                     <StatCard key={stat.label} {...stat} />
                   ))}
+            </div>
+          </div>
+
+          {/* Job Sources Section */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h2 className="text-xs sm:text-sm font-semibold text-surface-300 uppercase tracking-wider">
+                  Job Sources & Categories
+                </h2>
+                <p className="text-xs text-surface-400">Discover jobs grouped by target company type</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              {CATEGORIES.map((cat) => (
+                <CategoryCard key={cat.title} {...cat} />
+              ))}
             </div>
           </div>
 

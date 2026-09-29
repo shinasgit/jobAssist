@@ -6,7 +6,21 @@ from sqlalchemy.orm import Session
 from app.automation.adapters.himalayas_adapter import HimalayasAdapter
 from app.automation.adapters.remotive_adapter import RemotiveAdapter
 from app.automation.adapters.arbeitnow_adapter import ArbeitnowAdapter
+from app.automation.adapters.greenhouse_adapter import GreenhouseAdapter
+from app.automation.adapters.lever_adapter import LeverAdapter
+from app.automation.adapters.ashby_adapter import AshbyAdapter
+from app.automation.adapters.workable_adapter import WorkableAdapter
+from app.automation.adapters.recruitee_adapter import RecruiteeAdapter
+from app.automation.adapters.breezy_adapter import BreezyAdapter
+from app.automation.adapters.bamboohr_adapter import BambooHRAdapter
+from app.automation.adapters.personio_adapter import PersonioAdapter
+from app.automation.adapters.smartrecruiters_adapter import SmartRecruitersAdapter
+from app.automation.adapters.teamtailor_adapter import TeamtailorAdapter
+from app.automation.adapters.workday_adapter import WorkdayAdapter
+from app.automation.tech_classifier import is_tech_job
+from app.automation.registry import get_company_category
 from app.database.models import Job
+
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +31,17 @@ class JobSearchService:
             HimalayasAdapter(),
             RemotiveAdapter(),
             ArbeitnowAdapter(),
+            GreenhouseAdapter(),
+            LeverAdapter(),
+            AshbyAdapter(),
+            WorkableAdapter(),
+            RecruiteeAdapter(),
+            BreezyAdapter(),
+            BambooHRAdapter(),
+            PersonioAdapter(),
+            SmartRecruitersAdapter(),
+            TeamtailorAdapter(),
+            WorkdayAdapter(),
         ]
 
     async def _fetch_from_adapter(self, adapter, search_params: dict) -> List[Dict[str, Any]]:
@@ -63,19 +88,37 @@ class JobSearchService:
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         all_jobs = []
-        for res in results:
+        source_counts: Dict[str, int] = {}
+        failed_sources: List[Dict[str, str]] = []
+
+        for adapter, res in zip(active_adapters, results):
+            source_key = adapter.__class__.__name__.lower().replace("adapter", "")
             if isinstance(res, list):
                 all_jobs.extend(res)
+                source_counts[source_key] = len(res)
             elif isinstance(res, Exception):
-                logger.error(f"Async gather returned exception: {res}")
+                logger.error(f"Async gather returned exception for {source_key}: {res}")
+                source_counts[source_key] = 0
+                failed_sources.append({
+                    "source": source_key,
+                    "reason": str(res)
+                })
 
         logger.info(f"Total raw jobs aggregated across sources: {len(all_jobs)}")
+
+        # Filter jobs for IT/Tech roles only
+        tech_filtered_jobs = []
+        for j in all_jobs:
+            if is_tech_job(j.get("title"), j.get("description")):
+                tech_filtered_jobs.append(j)
+
+        logger.info(f"Jobs after IT/Tech filter: {len(tech_filtered_jobs)} (from {len(all_jobs)} raw)")
 
         # Deduplicate and save
         inserted_count = 0
         skipped_count = 0
 
-        for job_dict in all_jobs:
+        for job_dict in tech_filtered_jobs:
             if not job_dict.get("title") or not job_dict.get("source_url"):
                 continue
 
@@ -99,6 +142,9 @@ class JobSearchService:
                 skipped_count += 1
                 continue
 
+            # Determine source category (MNC, STARTUP, IT_TECH, REMOTE)
+            cat = get_company_category(job_dict.get("company"), job_dict.get("source"))
+
             # Insert new job into SQLite
             new_job = Job(
                 title=job_dict["title"],
@@ -110,9 +156,11 @@ class JobSearchService:
                 employment_type=job_dict.get("employment_type"),
                 description=job_dict.get("description"),
                 source=job_dict["source"],
+                source_category=cat,
                 source_url=job_dict["source_url"],
                 posted_date=job_dict.get("posted_date")
             )
+
             db.add(new_job)
             inserted_count += 1
 
@@ -120,9 +168,15 @@ class JobSearchService:
         logger.info(f"Multi-source search complete. Inserted: {inserted_count}, Skipped duplicates: {skipped_count}")
 
         return {
-            "jobs_found": len(all_jobs),
+            "jobs_found": len(tech_filtered_jobs),
             "jobs_inserted": inserted_count,
-            "duplicates_skipped": skipped_count
+            "duplicates_skipped": skipped_count,
+            "sources": source_counts,
+            "failed_sources": failed_sources,
+            "location": search_params.get("location", "Bangalore"),
+            "category": "IT / Tech"
         }
 
 job_search_service = JobSearchService()
+
+

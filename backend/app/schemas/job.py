@@ -12,8 +12,10 @@ class JobBase(BaseModel):
     employment_type: Optional[str] = None
     description: Optional[str] = None
     source: Optional[str] = None
+    source_category: Optional[str] = "IT_TECH"
     source_url: Optional[str] = None
     posted_date: Optional[str] = None
+
 
 class JobCreate(JobBase):
     pass

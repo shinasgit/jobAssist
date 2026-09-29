@@ -16,9 +16,11 @@ class Job(Base):
     employment_type = Column(String, nullable=True)
     description = Column(Text, nullable=True)
     source = Column(String, nullable=True)
+    source_category = Column(String, nullable=True, default="IT_TECH")
     source_url = Column(String, nullable=True)
     posted_date = Column(String, nullable=True)
     discovered_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
 
     __table_args__ = (
         UniqueConstraint('source', 'source_url', name='uix_source_source_url'),

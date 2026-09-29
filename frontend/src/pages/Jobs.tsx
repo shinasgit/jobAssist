@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Search, MapPin, Filter, Briefcase } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { Search, MapPin, Filter, Briefcase, Building2, Rocket, Cpu, Globe } from 'lucide-react';
 import { jobsApi } from '../services/jobsApi';
 import { useJobStore } from '../store/jobStore';
 import type { RemoteType } from '../types';
@@ -13,19 +14,47 @@ const REMOTE_OPTIONS: { value: RemoteType; label: string }[] = [
   { value: 'onsite', label: 'On-site' },
 ];
 
+const CATEGORY_TABS = [
+  { id: '', label: 'All Jobs', icon: Briefcase },
+  { id: 'mnc', label: '🏢 MNC Jobs', icon: Building2 },
+  { id: 'startup', label: '🚀 Startup Jobs', icon: Rocket },
+  { id: 'it-tech', label: '💻 IT & Tech', icon: Cpu },
+  { id: 'remote', label: '🌐 Remote', icon: Globe },
+];
+
 export default function Jobs() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryParam = searchParams.get('category') || '';
+
   const { filters, setFilters, resetFilters } = useJobStore();
   const [localKeyword, setLocalKeyword] = useState(filters.keyword ?? '');
   const [showFilters, setShowFilters] = useState(false);
 
+  useEffect(() => {
+    if (categoryParam !== (filters.category || '')) {
+      setFilters({ category: categoryParam, page: 1 });
+    }
+  }, [categoryParam]);
+
+  const activeCategory = filters.category || categoryParam;
+
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: ['jobs', filters],
-    queryFn: () => jobsApi.list(filters),
+    queryKey: ['jobs', filters, activeCategory],
+    queryFn: () => jobsApi.list({ ...filters, category: activeCategory }),
   });
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     setFilters({ keyword: localKeyword, page: 1 });
+  }
+
+  function handleCategoryTab(catId: string) {
+    if (catId) {
+      setSearchParams({ category: catId });
+    } else {
+      setSearchParams({});
+    }
+    setFilters({ category: catId, page: 1 });
   }
 
   function toggleRemote(value: RemoteType) {
@@ -40,11 +69,34 @@ export default function Jobs() {
     <div className="max-w-5xl mx-auto space-y-6 w-full min-w-0">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-surface-50">Job Search</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-surface-50 capitalize">
+            {activeCategory ? `${activeCategory.replace('-', ' & ')} Jobs` : 'Job Search'}
+          </h1>
           <p className="text-xs sm:text-sm text-surface-400 mt-1">
-            {data ? `${data.total.toLocaleString()} jobs found` : 'Searching…'}
+            {data ? `${data.total.toLocaleString()} jobs found in configured career sources` : 'Searching…'}
           </p>
         </div>
+      </div>
+
+      {/* Category Tabs */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+        {CATEGORY_TABS.map((tab) => {
+          const isSelected = (tab.id === '' && !activeCategory) || tab.id === activeCategory;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => handleCategoryTab(tab.id)}
+              className={clsx(
+                'px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer',
+                isSelected
+                  ? 'bg-brand-500 text-white shadow-glow-sm'
+                  : 'bg-surface-800/80 text-surface-300 hover:bg-surface-700 hover:text-surface-100'
+              )}
+            >
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Search Bar */}
@@ -144,10 +196,10 @@ export default function Jobs() {
         ) : data?.items?.length === 0 ? (
           <div className="glass-card p-8 sm:p-12 text-center flex flex-col items-center justify-center">
             <Briefcase className="w-12 h-12 text-surface-600 mb-4" />
-            <p className="text-surface-300 font-medium">No jobs found</p>
-            <p className="text-surface-500 text-sm mt-1">Try different keywords or filters</p>
-            <button id="btn-reset-search" onClick={resetFilters} className="btn-secondary btn-sm mt-4">
-              Clear filters
+            <p className="text-surface-300 font-medium">No jobs found in this category</p>
+            <p className="text-surface-500 text-sm mt-1">Try clearing category filters or run a multi-source search</p>
+            <button id="btn-reset-search" onClick={() => handleCategoryTab('')} className="btn-secondary btn-sm mt-4">
+              View All Jobs
             </button>
           </div>
         ) : (
